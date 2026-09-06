@@ -5,388 +5,312 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyUrgentBox - 3x3 Dinamik Likidite Matrisi</title>
     <style>
-        body { background-color: #0D1B2A; color: #F8F9FA; font-family: sans-serif; margin: 0; padding: 0; }
-        .gradient-text { background: linear-gradient(45deg, #E0A96D, #85BB65); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .logo-container { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; cursor: pointer; }
-        .logo-icon { width: 2.2rem; height: 2.2rem; display: flex; align-items: center; justify-content: center; }
-        .logo-text { font-size: 1.3rem; font-weight: 800; letter-spacing: 2px; color: #F8F9FA; font-family: 'Helvetica', sans-serif; }
-        .manifesto-box { background: rgba(25, 34, 56, 0.4); border-left: 4px solid #E0A96D; padding: 1.25rem; margin-top: 1.5rem; border-radius: 0 0.75rem 0.75rem 0; font-size: 0.95rem; line-height: 1.6; color: #9ca3af; }
-        .summary-table-container { margin-top: 1.5rem; background: rgba(0,0,0,0.3); border: 1px solid #1f2937; border-radius: 0.75rem; padding: 1rem; }
-        .table-title { font-size: 0.8rem; font-weight: bold; color: #E0A96D; letter-spacing: 1px; margin-bottom: 0.75rem; text-transform: uppercase; border-bottom: 1px solid #1f2937; padding-bottom: 0.4rem; }
-        .table-row { display: grid; grid-template-columns: 1.2fr 2.5fr 1.5fr; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem; align-items: center; }
-        .table-row:last-child { border-bottom: none; }
-        .col-name { font-weight: bold; color: #ffffff; } .col-tip { color: #9ca3af; }
-        .col-lock { color: #85BB65; font-weight: bold; text-align: right; text-decoration: none; font-size: 0.75rem; }
-        .col-lock:hover { text-decoration: underline; }
-        .chart-box-container { width: 140px; height: 140px; margin: 0 auto 1.5rem auto; position: relative; }
-        .donut-chart-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
-        .donut-hole { fill: #1B263B; }
-        .chart-center-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.65rem; font-weight: bold; text-align: center; color: #9ca3af; line-height: 1.2; width: 75px; pointer-events: none; }
-        .tracker-section { background-color: #1B263B; border: 1px solid #374151; border-radius: 1.5rem; padding: 2rem; margin-top: 3rem; }
-        .tracker-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.5rem; margin-top: 1rem; }
-        .tracker-input, .tracker-select { background-color: #0D1B2A; border: 1px solid #374151; color: white; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.8rem; width: 100%; box-sizing: border-box; height: 36px; }
-        .add-btn { background-color: #85BB65; color: white; border: none; font-weight: bold; border-radius: 0.5rem; cursor: pointer; padding: 0.5rem; font-size: 0.8rem; height: 36px; }
-        .portfolio-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; font-size: 0.8rem; text-align: left; }
-        .portfolio-table th { color: #E0A96D; border-bottom: 1px dashed #374151; padding: 0.5rem 0; }
-        .portfolio-table td { padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: bold; }
-        .remove-btn { color: #ef4444; background: none; border: none; cursor: pointer; font-size: 0.75rem; }
-        .doc-grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 4rem; }
-        .doc-card { background: rgba(27, 38, 59, 0.4); border: 1px solid #1f2937; padding: 1.5rem; border-radius: 1rem; transition: 0.2s; }
-        .doc-card:hover { border-color: #E0A96D; background: rgba(27, 38, 59, 0.6); }
-        .doc-num { font-size: 1.5rem; margin-bottom: 0.5rem; }
-        .matrix-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 1.5rem; }
-        .matrix-box { background-color: rgba(27, 38, 59, 0.5); border: 1px solid #374151; border-radius: 0.75rem; padding: 1rem; text-align: center; cursor: pointer; transition: 0.2s; }
-        .matrix-box:hover { border-color: #E0A96D; background-color: rgba(27, 38, 59, 0.8); }
-        .matrix-box.active { border-color: #85BB65; background-color: rgba(133, 187, 101, 0.15); box-shadow: 0 0 15px rgba(133, 187, 101, 0.2); }
-        .box-vade { font-size: 0.65rem; color: #9ca3af; font-weight: bold; text-transform: uppercase; display: block; }
-        .box-risk { font-size: 0.8rem; font-weight: bold; color: #ffffff; margin: 0.25rem 0; display: block; }
-        .box-perf { font-size: 0.75rem; font-weight: bold; color: #85BB65; display: block; } .box-perf.negative { color: #ef4444; }
-        .currency-btn { padding: 0.35rem 1rem; font-size: 0.75rem; border-radius: 0.5rem; border: none; background: transparent; color: #9ca3af; cursor: pointer; }
-        .currency-btn.active { background-color: #E0A96D; color: #0D1B2A; font-weight: bold; }
-        .w-full { width: 100%; } .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; } .px-8 { padding-left: 2rem; padding-right: 2rem; }
-        .flex { display: flex; } .justify-between { justify-content: space-between; } .items-center { align-items: center; }
-        .fixed { position: fixed; } .top-0 { top: 0; } .z-50 { z-index: 50; } .bg-dark { background-color: #0D1B2A; }
-        .border-b { border-bottom: 1px solid #1f2937; } .text-2xl { font-size: 1.5rem; } .font-bold { font-weight: 700; }
-        .bg-gold { background-color: #E0A96D; color: #0D1B2A; text-decoration: none; } .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
-        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; } .rounded-full { border-radius: 9999px; }
-        .min-h-screen { min-height: 100vh; } .pt-32 { padding-top: 8rem; } .pb-16 { padding-bottom: 4rem; }
-        .max-w-7xl { max-width: 80rem; margin-left: auto; margin-right: auto; padding: 0 1.5rem; } .grid { display: grid; }
-        @media (min-width: 1024px) { .lg:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-        .gap-12 { gap: 3rem; } .text-5xl { font-size: 3rem; font-weight: 900; line-height: 1.2; margin-top: 1rem; }
-        .text-gray-400 { color: #9ca3af; } .mt-6 { margin-top: 1.5rem; font-size: 1.125rem; max-w: 36rem; line-height: 1.6; }
-        .mt-8 { margin-top: 2rem; } .gap-4 { gap: 1rem; } .border { border: 1px solid #374151; } .bg-card { background-color: #1B263B; }
-        .text-white { color: #ffffff; } .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
-        .rounded-xl { border-radius: 0.75rem; } .p-8 { padding: 2rem; }
-        .rounded-3xl { border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); position: relative; }
-        .absolute { position: absolute; } .top-4 { top: 1rem; } .right-4 { right: 1rem; } .gap-2 { gap: 0.5rem; }
-        .bg-black-40 { background-color: rgba(0,0,0,0.4); padding: 0.25rem 0.75rem; border-radius: 9999px; color: #85BB65; } .text-xs { font-size: 0.75rem; } 
-        .mb-6 { margin-bottom: 1.5rem; } .text-center { text-align: center; } .py-24 { padding-top: 6rem; padding-bottom: 6rem; }
-        .allocation-item { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px dashed rgba(255,255,255,0.05); font-size: 0.85rem; }
-        .item-label { font-weight: bold; } .item-val { font-weight: bold; color: white; }
-        .digital-display { margin-top: 1.5rem; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 1rem; border: 1px solid #1f2937; }
-        .display-title { font-size: 0.75rem; font-weight: bold; color: #E0A96D; letter-spacing: 1px; margin-bottom: 0.75rem; text-transform: uppercase; }
-        .perf-banner { margin-top: 1rem; background: rgba(133, 187, 101, 0.1); border: 1px solid rgba(133, 187, 101, 0.2); padding: 0.75rem; border-radius: 0.75rem; font-size: 0.75rem; text-align: center; }
+        body {
+            background-color: #0D1B2A;
+            color: #F8F9FA;
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .gradient-text {
+            background: linear-gradient(45deg, #E0A96D, #85BB65);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .logo-icon {
+            width: 2.2rem;
+            height: 2.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-text {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #F8F9FA;
+            font-family: 'Helvetica', sans-serif;
+        }
+        .manifesto-box {
+            background: rgba(25, 34, 56, .4);
+            border-left: 4px solid #E0A96D;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+            border-radius: 0 .75rem .75rem 0;
+            font-size: .95rem;
+            line-height: 1.6;
+            color: #9ca3af;
+        }
+        .summary-table-container {
+            margin-top: 1.5rem;
+            background: rgba(0, 0, 0, .3);
+            border: 1px solid #1f2937;
+            border-radius: .75rem;
+            padding: 1rem;
+        }
+        .table-title {
+            font-size: .8rem;
+            font-weight: bold;
+            color: #E0A96D;
+            letter-spacing: 1px;
+            margin-bottom: .75rem;
+            text-transform: uppercase;
+            border-bottom: 1px solid #1f2937;
+            padding-bottom: .4rem;
+        }
+        .table-row {
+            display: grid;
+            grid-template-columns: 1.2fr 2.5fr 1.5fr;
+            gap: .5rem;
+            padding: .5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .05);
+            font-size: .8rem;
+            align-items: center;
+        }
+        .table-row:last-child {
+            border-bottom: none;
+        }
+        .col-name {
+            font-weight: bold;
+            color: #fff;
+        }
+        .col-tip {
+            color: #9ca3af;
+        }
+        .col-lock {
+            color: #85BB65;
+            font-weight: bold;
+            text-align: right;
+            text-decoration: none;
+            font-size: .75rem;
+        }
+        .col-lock:hover {
+            text-decoration: underline;
+        }
+        .chart-box-container {
+            width: 100%;
+            height: 320px;
+            margin-bottom: 1.5rem;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid #1f2937;
+        }
+        .tracker-section {
+            background-color: #1B263B;
+            border: 1px solid #374151;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+        .tracker-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: .5rem;
+            margin-top: 1rem;
+        }
+        .tracker-input, .tracker-select {
+            background-color: #0D1B2A;
+            border: 1px solid #374151;
+            color: #fff;
+            padding: .5rem;
+            border-radius: .5rem;
+            font-size: .8rem;
+            width: 100%;
+            box-sizing: border-box;
+            height: 36px;
+        }
+        .add-btn {
+            background-color: #85BB65;
+            color: #fff;
+            border: none;
+            font-weight: bold;
+            border-radius: .5rem;
+            cursor: pointer;
+            padding: .5rem;
+            font-size: .8rem;
+            height: 36px;
+        }
+        .portfolio-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            font-size: .8rem;
+            text-align: left;
+        }
+        .portfolio-table th {
+            color: #E0A96D;
+            border-bottom: 1px dashed #374151;
+            padding: .5rem 0;
+        }
+        .portfolio-table td {
+            padding: .5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .05);
+            font-weight: bold;
+        }
+        .remove-btn {
+            color: #ef4444;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: .75rem;
+        }
+        .doc-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 4rem;
+        }
+        .doc-card {
+            background: rgba(27, 38, 59, .4);
+            border: 1px solid #1f2937;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            transition: .2s;
+        }
+        .doc-card:hover {
+            border-color: #E0A96D;
+            background: rgba(27, 38, 59, .6);
+        }
+        .doc-num {
+            font-size: 1.5rem;
+            margin-bottom: .5rem;
+        }
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: .75rem;
+            margin-top: 1.5rem;
+        }
+        .matrix-box {
+            background-color: rgba(27, 38, 59, .5);
+            border: 1px solid #374151;
+            border-radius: .75rem;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: .2s;
+        }
+        .matrix-box:hover {
+            border-color: #E0A96D;
+            background-color: rgba(27, 38, 59, .8);
+        }
+        .matrix-box.active {
+            border-color: #85BB65;
+            background-color: rgba(133, 187, 101, .15);
+            box-shadow: 0 0 15px rgba(133, 187, 101, .2);
+        }
+        .box-vade {
+            font-size: .65rem;
+            color: #9ca3af;
+            font-weight: bold;
+            text-transform: uppercase;
+            display: block;
+        }
+        .box-risk {
+            font-size: .8rem;
+            font-weight: bold;
+            color: #fff;
+            margin: .25rem 0;
+            display: block;
+        }
+        .box-perf {
+            font-size: .75rem;
+            font-weight: bold;
+            color: #85BB65;
+            display: block;
+        }
+        .box-perf.negative {
+            color: #ef4444;
+        }
+        .currency-btn {
+            padding: .35rem 1rem;
+            font-size: .75rem;
+            border-radius: .5rem;
+            border: none;
+            background: transparent;
+            color: #9ca3af;
+            cursor: pointer;
+        }
+        .currency-btn.active {
+            background-color: #E0A96D;
+            color: #0D1B2A;
+            font-weight: bold;
+        }
+        .w-full { width: 100%; }
+        .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+        .px-8 { padding-left: 2rem; padding-right: 2rem; }
+        .flex { display: flex; }
+        .justify-between { justify-content: space-between; }
+        .items-center { align-items: center; }
+        .fixed { position: fixed; }
+        .top-0 { top: 0; }
+        .z-50 { z-index: 50; }
+        .bg-dark { background-color: #0D1B2A; }
+        .border-b { border-bottom: 1px solid #1f2937; }
+        .text-2xl { font-size: 1.5rem; }
+        .font-bold { font-weight: 700; }
+        .bg-gold { background-color: #E0A96D; color: #0D1B2A; text-decoration: none; }
+        .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+        .py-2 { padding-top: .5rem; padding-bottom: .5rem; }
+        .rounded-full { border-radius: 9999px; }
+        .min-h-screen { min-height: 100vh; }
+        .pt-32 { padding-top: 8rem; }
+        .pb-16 { padding-bottom: 4rem; }
+        .max-w-7xl { max-width: 80rem; margin-left: auto; margin-right: auto; padding: 0 1.5rem; }
+        .grid { display: grid; }
+        @media (min-width: 1024px) { .lg\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        .gap-12 { gap: 3rem; }
+        .text-5xl { font-size: 3rem; font-weight: 900; line-height: 1.2; margin-top: 1rem; }
+        .text-gray-400 { color: #9ca3af; }
+        .mt-6 { margin-top: 1.5rem; font-size: 1.125rem; max-w: 36rem; line-height: 1.6; }
+        .mt-8 { margin-top: 2rem; }
+        .gap-4 { gap: 1rem; }
+        .border { border: 1px solid #374151; }
+        .bg-card { background-color: #1B263B; }
+        .text-white { color: #fff; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .rounded-xl { border-radius: .75rem; }
+        .p-8 { padding: 2rem; }
+        .rounded-3xl { border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,.25); position: relative; }
+        .absolute { position: absolute; }
+        .top-4 { top: 1rem; }
+        .right-4 { right: 1rem; }
+        .gap-2 { gap: .5rem; }
+        .bg-black-40 { background-color: rgba(0,0,0,.4); padding: .25rem .75rem; border-radius: 9999px; color: #85BB65; }
+        .text-xs { font-size: .75rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .text-center { text-align: center; }
+        .py-24 { padding-top: 6rem; padding-bottom: 6rem; }
+        .allocation-item { display: flex; justify-content: space-between; padding: .5rem 0; border-bottom: 1px dashed rgba(255,255,255,.05); font-size: .85rem; }
+        .item-label { font-weight: bold; }
+        .item-val { font-weight: bold; color: #fff; }
+        .digital-display { margin-top: 1.5rem; background: rgba(0,0,0,.2); padding: 1rem; border-radius: 1rem; border: 1px solid #1f2937; }
+        .display-title { font-size: .75rem; font-weight: bold; color: #E0A96D; letter-spacing: 1px; margin-bottom: .75rem; text-transform: uppercase; }
+        .perf-banner { margin-top: 1rem; background: rgba(133,187,101,.1); border: 1px solid rgba(133,187,101,.2); padding: .75rem; border-radius: .75rem; font-size: .75rem; text-align: center; }
     </style>
 </head>
-<body>
-    <nav class="w-full py-6 px-8 flex justify-between items-center border-b bg-dark fixed top-0 z-50">
-        <a href="#" class="logo-container">
-            <div class="logo-icon">
-                <svg viewBox="0 0 100 100" width="100%" height="100%">
-                    <polygon points="50,15 85,35 85,75 50,95 15,75 15,35" fill="none" stroke="#E0A96D" stroke-width="6" stroke-linejoin="round"/>
-                    <polygon points="50,30 73,43 73,70 50,83 27,70 27,43" fill="none" stroke="#85BB65" stroke-width="4" stroke-linejoin="round"/>
-                    <circle cx="50" cy="56" r="10" fill="#F8F9FA"/>
-                </svg>
-            </div>
-            <div class="logo-text">MY<span class="gradient-text">URGENT</span>BOX</div>
-        </a>
-        <a href="#register" class="bg-gold font-bold px-5 py-2 rounded-full">Erken Erişim Katılımı</a>
-    </nav>
-    <section class="min-h-screen pt-32 pb-16 px-6 max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-        <div>
-            <span class="text-xs font-bold uppercase tracking-widest" style="color: #85BB65; border: 1px solid #85BB65; padding: 0.25rem 0.75rem; border-radius: 9999px;">The Elite Nine - Dinamik Matris Terminali</span>
-            <h1 class="text-5xl font-black mt-4 leading-tight">Kurumsal <br><span class="gradient-text">3x3 Likidite</span> Matrisi.</h1>
-            
-            <div class="manifesto-box">
-                <b>Neden Sadece "The Elite Nine" (Seçkin Dokuz Bileşen)?</b><br>
-                MyUrgentBox, kriz anlarında likidite kilitlenmesi yaşayan hantal varlıkları tamamen dışarıda bırakır. Algoritmamız dünyanın en güçlü 4 rezerv para birimine, taktiksel <b>Türk Lirası (TRY)</b> enstrümanına ve 4 sarsılmaz emtiasına kilitlenmiştir.
-            </div>
-            <div class="summary-table-container">
-                <div class="table-title">📊 HAFTALIK BİLEŞEN GÖZETİMİ VE İPUÇLARI</div>
-                <div class="table-row">
-                    <span class="col-name">🥇 Ons Altın</span><span class="col-tip">Jeopolitik risk primleri yüksek, ana koruma aktif.</span><a href="#register" class="col-lock">🔒 Detaylı Analiz</a>
-                </div>
-                <div class="table-row">
-                    <span class="col-name">🥈 Gümüş</span><span class="col-tip">Sanayi talebi dengeli, altın rasyosu izleniyor.</span><a href="#register" class="col-lock">🔒 Detaylı Analiz</a>
-                </div>
-                <div class="table-row">
-                    <span class="col-name">🛢️ Brent Petrol</span><span class="col-tip">Arz kısıtları volatiliteyi artırabilir, temkinli duruş.</span><a href="#register" class="col-lock">🔒 Detaylı Analiz</a>
-                </div>
-                <div class="table-row">
-                    <span class="col-name">🔥 Doğal Gaz</span><span class="col-tip">Mevsimsel stok geçişi aktif, kırılma yakın.</span><a href="#register" class="col-lock">🔒 Detaylı Analiz</a>
-                </div>
-            </div>
-            <div class="matrix-grid">
-                <div id="cell_kisa_safe" onclick="selectCell('kisa', 'safe')" class="matrix-box">
-                    <span class="box-vade">Kısa Vade</span><span class="box-risk">🛡️ Güvenli</span><span id="perf_kisa_safe" class="box-perf">%+0.00</span>
-                </div>
-                <div id="cell_kisa_balanced" onclick="selectCell('kisa', 'balanced')" class="matrix-box active">
-                    <span class="box-vade">Kısa Vade</span><span class="box-risk">⚖️ Dengeli</span><span id="perf_kisa_balanced" class="box-perf">%+0.00</span>
-                </div>
-                <div id="cell_kisa_aggressive" onclick="selectCell('kisa', 'aggressive')" class="matrix-box">
-                    <span class="box-vade">Kısa Vade</span><span class="box-risk">⚡ Agresif</span><span id="perf_kisa_aggressive" class="box-perf">%+0.00</span>
-                </div>
-                <div id="cell_orta_safe" onclick="selectCell('orta', 'safe')" class="matrix-box">
-                    <span class="box-vade">Orta Vade</span><span class="box-risk">🛡️ Güvenli</span><span id="perf_orta_safe" class="box-perf">%+0.00</span>
-                </div>
-                <div id="cell_orta_balanced" onclick="selectCell('orta', 'balanced')" class="matrix-box">
-                    <span class="box-vade">Orta Vade</span><span class="box-risk">⚖️ Dengeli</span><span id="perf_orta_balanced" class="box-perf">%+0.00</span>
-                </div>
-                <div id="cell_orta_aggressive" onclick="selectCell('orta', 'aggressive')" class="matrix-box">
-                    <span class="box-vade">Orta Vade</span><span class="box-risk">🔥 Agresif</span><span id="perf_orta_aggressive" class="box-perf">%+0.00</span>
-                </div>
-                <div id="cell_uzun_safe" onclick="selectCell('uzun', 'safe')" class="matrix-box">
-                    <span class="box-vade">Uzun Vade</span><span class="box-risk">🛡️ Güvenli</span><span id="perf_uzun_safe" class="box-perf">%+0.00</span>
-                </div>
-                <div id="cell_uzun_balanced" onclick="selectCell('uzun', 'balanced')" class="matrix-box">
-                    <span class="box-vade">Uzun Vade</span><span class="box-risk">⚖️ Dengeli</span><span id="perf_uzun_balanced" class="box-perf">%+0.00</span>
-                </div>
-                <div id="cell_uzun_aggressive" onclick="selectCell('uzun', 'aggressive')" class="matrix-box">
-                    <span class="box-vade">Uzun Vade</span><span class="box-risk">🚀 Agresif</span><span id="perf_uzun_aggressive" class="box-perf">%+0.00</span>
-                </div>
-            </div>
-        </div>
-        <div class="bg-card p-8 rounded-3xl border">
-            <div class="absolute top-4 right-4 flex items-center gap-2 text-xs"><span class="bg-black-40">● Canlı Terminal Bağı</span></div>
-            <div class="flex justify-center gap-2 bg-black-20 p-1 rounded-xl self-center" style="background: rgba(0,0,0,0.2); border-radius: 0.75rem; width: fit-content; margin: 0 auto 1rem auto;">
-                <button id="btnTRY" onclick="setCurrency('TRY')" class="currency-btn active">TRY Bazlı</button>
-                <button id="btnUSD" onclick="setCurrency('USD')" class="currency-btn">USD Bazlı</button>
-            </div>
-            <div class="chart-box-container" style="width:100%; height:320px; margin-bottom:1.5rem; border-radius:1rem; overflow:hidden; border:1px solid #1f2937;"><iframe src="https://tradingview.com" width="100%" height="100%" frameborder="0" allowtransparency="true" scrolling="no" allowfullscreen></iframe>
-                <svg viewBox="0 0 42 42" class="donut-chart-svg" id="donutChartSvg">
-                    <circle class="donut-hole" cx="21" cy="21" r="15.91549430918954"></circle>
-                </svg>
-                <div class="chart-center-text" id="chartCenterText">KISA VADE<br>DENGELİ</div>
-            </div>
-            <div class="digital-display">
-                <div class="display-title" id="displayTitle">KISA VADE + DENGELİ PORTFÖY REÇETESİ</div>
-                <div id="allocationList"></div>
-            </div>
-            <div class="perf-banner" id="perfBanner">
-                01.09.2026 tarihinde bu hücreye yatırılan 100.000 TL an itibarıyla: <span style="color:#85BB65;" id="bannerCash">100.000 TL</span> (<span id="bannerPercent">%+0.00</span>)
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.25rem; text-align: center; font-size: 0.65rem; color: #9ca3af; margin-top: 1.5rem;" class="border-t pt-4">
-                <div><span class="block font-bold text-white text-xs" id="liveUSD">48.41 TRY</span>USD/TRY</div>
-                <div><span class="block font-bold text-[#E0A96D] text-xs" id="liveGold">4427.70 $</span>Ons Altın</div>
-                <div><span class="block font-bold text-red-400 text-xs" id="liveOil">96.40 $</span>Brent Petrol</div>
-                <div><span class="block font-bold text-blue-400 text-xs" id="liveGas">3.15 $</span>Doğal Gaz</div>
-            </div>
-        </div>
-    </section>
-    <section class="max-w-7xl mx-auto px-6 pb-16">
-        <div class="tracker-section">
-            <h3 class="text-xl font-bold" style="color:#E0A96D; margin:0;">📊 İnteraktif Portföy Takip & Değerleme Simülatörü</h3>
-            <p class="text-gray-400 text-sm mt-1">Kendi geçmiş alımlarınızı veya özel sepetinizi ekleyerek, bugünün saniyelik verileriyle konsolide kâr/zarar durumunuzu anlık izleyin.</p>
-            <div class="tracker-inputs">
-                <select id="trackAsset" class="tracker-select">
-                    <option value="gold">🥇 Ons Altın</option> <option value="silver">🥈 Gümüş</option>
-                    <option value="oil">🛢️ Brent Petrol</option> <option value="gas">🔥 Doğal Gaz (ETF)</option>
-                    <option value="usd">💵 ABD Doları</option> <option value="eur">💶 Euro</option>
-                    <option value="cny">🇨🇳 Çin Yuanı</option> <option value="jpy">🇯🇵 Japon Yeni</option>
-                </select>
-                <input type="date" id="trackDate" class="tracker-input" value="2026-09-01" min="2026-08-01" max="2026-09-06">
-                <input type="number" id="trackAmount" class="tracker-input" placeholder="Alım Tutarı">
-                <select id="trackUnit" class="tracker-select" style="width:70px;">
-                    <option value="TRY">TRY</option> <option value="USD">USD</option>
-                </select>
-                <button onclick="addAssetToTracker()" class="add-btn">+ Portföye Ekle</button>
-            </div>
-            <table class="portfolio-table">
-                <thead>
-                    <tr>
-                        <th>Bileşen</th> <th>Alım Tarihi</th> <th style="text-align:right;">Maliyet Tutar</th> <th style="text-align:right;">Güncel Değer (Anlık)</th> <th style="text-align:right;">Kâr / Zarar</th> <th></th>
-                    </tr>
-                </thead>
-                <tbody id="trackerTableBody"></tbody>
-            </table>
-            <div id="trackerSummaryBanner" class="perf-banner" style="margin-top:1.5rem; display:none;">
-                Toplam Konsolide Portföy Değeri: <span style="color:#85BB65;" id="trackTotalCash">0 TRY</span> (<span id="trackTotalPercent">%+0.00</span>)
-            </div>
-        </div>
-    </section>
-    <section id="how-it-works" class="py-24 bg-dark border-t border-b px-6">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center max-w-3xl mx-auto">
-                <h2 class="text-4xl font-bold">Matris Oranları <span class="gradient-text">Küresel Konjonktüre</span> Nasıl Tepki Verir?</h2>
-                <p class="text-gray-400 mt-4">MyUrgentBox, yalnızca bileşenlerin anlık fiyat değişimlerine ayak uydurmaz. Arka planda 24 saat kesintisiz çalışan dinamik bir makroekonomik gözetim altyapısı bulunur.</p>
-            </div>
-            <div class="doc-grid-container">
-                <div class="doc-card">
-                    <div class="doc-num">🌍</div>
-                    <h4 class="text-xl font-bold mb-3">Konjonktürel Entegrasyon</h4>
-                    <p class="text-gray-400 text-sm leading-relaxed">Sistem; küresel siyasi krizleri, ticaret savaşlarını, askeri gerilimleri ve emtia arz kısıtlarını canlı takip eder. Jeopolitik risk primleri yükseldiği anda, algoritma konjonktürel bir zırh kurarak matris hücrelerindeki ağırlıkları proaktif yeniden dengeler.</p>
-                </div>
-                <div class="doc-card">
-                    <div class="doc-num">🏛️</div>
-                    <h4 class="text-xl font-bold mb-3">Taktiksel Faiz Arbitrajı</h4>
-                    <p class="text-gray-400 text-sm leading-relaxed">TRY, küresel bir rezerv para olmamasına rağmen yüksek nominal faiz/getiri çarpanları sunar. Algoritma, özellikle Kısa Vadeli nakit döngülerinde yüksek yerel getiriden maksimum fayda sağlamak üzere portföye taktiksel olarak TRY nakit dengesi ekler.</p>
-                </div>
-                <div class="doc-card">
-                    <div class="doc-num">⏳</div>
-                    <h4 class="text-xl font-bold mb-3">24 Saat Canlı Dinamik Öngörü</h4>
-                    <p class="text-gray-400 text-sm leading-relaxed">Küresel borsa ve veri ağlarına entegre olan bu bağımsız mimari, piyasaların kapalı olduğu saatlerde bile risk matrislerini çalıştırmaya devam eder. Sistem, sermayeyi sürekli olarak potansiyeli yüksek ucuz varlıklara doğru kaydırır.</p>
-                </div>
-                <div class="doc-card">
-                    <div class="doc-num">🔒</div>
-                    <h4 class="text-xl font-bold mb-3">Sunucusuz (Serverless) Altyapı</h4>
-                    <p class="text-gray-400 text-sm leading-relaxed">Tüm matematiksel matris hesaplamaları ve sayaç motoru, kullanıcının kendi cihazının saf gücüyle lokalde döner. Bu sayede aynı anda 500.000 aktif kullanıcı yüklense bile altyapımıza sıfır yük biner; platform asla çökmez.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="register" class="py-24 px-6 text-center max-w-4xl mx-auto">
-        <h2 class="text-4xl font-extrabold mb-4">Gelişmiş Analiz Bültenine Abone Olun</h2>
-        <p class="text-gray-400 mb-8 max-w-xl mx-auto">Küresel konjonktür, siyaset ve savaş risklerine göre 9 Seçkin Bileşende yaptığımız haftalık derinlik analiz raporunu her Pazar akşamı ücretsiz e-posta olarak almak için sıraya girin.</p>
-        <form action="https://formspree.io" method="POST" style="display: flex; gap: 1rem; justify-content: center; max-w: 400px; margin: 0 auto; flex-wrap: wrap;">
-            <input type="email" name="email" id="inputEmail" placeholder="E-posta adresinizi yazın" required style="padding: 1rem 1.25rem; border-radius: 0.75rem; background-color: #1B263B; border: 1px solid #374151; color: white; flex-grow: 1; min-width: 200px;">
-            <button type="submit" id="btnSubmit" class="bg-green" style="padding: 1rem 2rem; border-radius: 0.75rem; font-weight: bold; background-color: #85BB65; color: white; border: none; cursor: pointer;">Abone Ol</button>
-        </form>
-    </section>
-    
-    <footer class="py-8 border-t text-center text-xs text-gray-500" style="border-top: 1px solid #1f2937; padding-top: 2rem;">
-        <p>&copy; 2026 MyUrgentBox Software. Tüm hakları saklıdır.</p>
-        <p style="color:#374151; font-size:0.7rem; margin-top:0.5rem; padding:0 2rem;">Fikri Mülkiyet Bildirimi: Bu platformda yer alan 3x3 Likidite Matrisi yerleşimi, "The Elite Nine" bileşen doktrini ve anlık re-alokasyon matematik formülleri uluslararası telif ve kaynak kod koruma (Domain-Lock) lisanslarına tabidir. İzinsiz kopyalanamaz.</p>
-    </footer>
-    <script>
-        let currentVade = 'kisa'; let currentRisk = 'balanced'; let currentCurrency = 'TRY';
-        const base_01_09 = { usd: 47.10, gold: 4350.00, oil: 93.20, gas: 2.95, eur: 51.20, cny: 6.60, jpy: 0.31, silver: 31.50 };
-        const base_01_08 = { usd: 45.90, gold: 4210.00, oil: 89.50, gas: 2.75, eur: 49.50, cny: 6.42, jpy: 0.29, silver: 29.60 };
-        let livePrices = { usd: 48.41, gold: 4427.70, oil: 96.40, gas: 3.15, eur: 52.80, cny: 6.82, jpy: 0.32, silver: 32.90 };
-        let userPortfolio = [];
-        const assetColors = { usd: '#85BB65', eur: '#3a86ff', try: '#ffb703', cny: '#d00000', jpy: '#8338ec', gold: '#E0A96D', silver: '#C0C0C0', oil: '#ef4444', gas: '#00b4d8' };
-        const matrixAllocations = {
-            'kisa_safe': [{n: 'Amerikan Doları (USD)', s:'usd', p: 40}, {n: 'Euro (EUR)', s:'eur', p: 25}, {n: 'Türk Lirası (TRY)', s:'try', p: 25}, {n: 'Ons Altın', s:'gold', p: 10}],
-            'kisa_balanced': [{n: 'Amerikan Doları (USD)', s:'usd', p: 30}, {n: 'Euro (EUR)', s:'eur', p: 20}, {n: 'Ons Altın', s:'gold', p: 30}, {n: 'Türk Lirası (TRY)', s:'try', p: 15}, {n: 'Brent Petrol', s:'oil', p: 5}],
-            'kisa_aggressive': [{n: 'Brent Petrol', s:'oil', p: 40}, {n: 'Doğal Gaz (ETF)', s:'gas', p: 40}, {n: 'Gümüş', s:'silver', p: 15}, {n: 'Japon Yeni (JPY)', s:'jpy', p: 5}],
-            'orta_safe': [{n: 'Ons Altın', s:'gold', p: 60}, {n: 'Gümüş', s:'silver', p: 15}, {n: 'Amerikan Doları (USD)', s:'usd', p: 15}, {n: 'Euro (EUR)', s:'eur', p: 10}],
-            'orta_balanced': [{n: 'Ons Altın', s:'gold', p: 40}, {n: 'Amerikan Doları (USD)', s:'usd', p: 15}, {n: 'Euro (EUR)', s:'eur', p: 15}, {n: 'Gümüş', s:'silver', p: 15}, {n: 'Brent Petrol', s:'oil', p: 10}, {n: 'Doğal Gaz (ETF)', s:'gas', p: 5}],
-            'orta_aggressive': [{n: 'Gümüş', s:'silver', p: 45}, {n: 'Brent Petrol', s:'oil', p: 35}, {n: 'Doğal Gaz (ETF)', s:'gas', p: 20}],
-            'uzun_safe': [{n: 'Ons Altın', s:'gold', p: 50}, {n: 'Çin Yuanı (CNY)', s:'cny', p: 35}, {n: 'Amerikan Doları (USD)', s:'usd', p: 10}, {n: 'Euro (EUR)', s:'eur', p: 5}],
-            'uzun_balanced': [{n: 'Ons Altın', s:'gold', p: 30}, {n: 'Çin Yuanı (CNY)', s:'cny', p: 25}, {n: 'Doğal Gaz (ETF)', s:'gas', p: 25}, {n: 'Gümüş', s:'silver', p: 20}],
-            'uzun_aggressive': [{n: 'Doğal Gaz (ETF)', s:'gas', p: 40}, {n: 'Gümüş', s:'silver', p: 35}, {n: 'Çin Yuanı (CNY)', s:'cny', p: 25}]
-        };
-        function getDailyHistoricalPrice(asset, dateString) {
-            if(asset === 'try') return 1;
-            const parsedDate = new Date(dateString); const ref0109 = new Date('2026-09-01'); const ref0108 = new Date('2026-08-01');
-            let diffFromSept = (parsedDate - ref0109) / (1000 * 60 * 60 * 24);
-            if(diffFromSept >= 0) {
-                let dailyTrend = (livePrices[asset] - base_01_09[asset]) / 5; return base_01_09[asset] + (diffFromSept * dailyTrend);
-            } else {
-                let diffFromAug = (parsedDate - ref0108) / (1000 * 60 * 60 * 24); let dailyTrend = (base_01_09[asset] - base_01_08[asset]) / 31; return base_01_08[asset] + (diffFromAug * dailyTrend);
-            }
-        }
-
-        function addAssetToTracker() {
-            const asset = document.getElementById('trackAsset').value; const dateStr = document.getElementById('trackDate').value; const amount = parseFloat(document.getElementById('trackAmount').value); const unit = document.getElementById('trackUnit').value; const assetName = document.getElementById('trackAsset').options[document.getElementById('trackAsset').selectedIndex].text;
-            if(!amount || amount <= 0 || !dateStr) return;
-            let d = new Date(dateStr); let formattedDate = ("0" + d.getDate()).slice(-2) + "." + ("0" + (d.getMonth() + 1)).slice(-2) + "." + d.getFullYear();
-            userPortfolio.push({ id: Date.now(), asset: asset, name: assetName, dateStr: dateStr, displayDate: formattedDate, amount: amount, unit: unit });
-            document.getElementById('trackAmount').value = ''; updateMatrixView();
-        }
-
-        function removeAsset(id) { userPortfolio = userPortfolio.filter(item => item.id !== id); updateMatrixView(); }
-        function selectCell(vade, risk) { currentVade = vade; currentRisk = risk; document.querySelectorAll('.matrix-box').forEach(box => box.classList.remove('active')); document.getElementById(`cell_${vade}_${risk}`).classList.add('active'); updateMatrixView(); }
-        function setCurrency(curr) { currentCurrency = curr; document.querySelectorAll('.currency-btn').forEach(btn => btn.classList.remove('active')); document.getElementById('btn' + curr).classList.add('active'); updateMatrixView(); }
-
-        function calculateCellPerformance(key) {
-            let totalReturn = 0;
-            matrixAllocations[key].forEach(item => {
-                if(item.s === 'try') { totalReturn += item.p * 0; }
-                else {
-                    let growth = (livePrices[item.s] - base_01_09[item.s]) / base_01_09[item.s];
-                    totalReturn += (item.p / 100) * growth;
-                }
-            });
-            return totalReturn * 100;
-        }
-        function drawDonutChart(allocations) {
-            const svg = document.getElementById('donutChartSvg'); document.querySelectorAll('.donut-segment').forEach(el => el.remove());
-            let accumulatedPercentage = 0;
-            allocations.forEach(item => {
-                const circle = document.createElementNS("http://w3.org", "circle");
-                circle.setAttribute("class", "donut-segment"); circle.setAttribute("cx", "21"); circle.setAttribute("cy", "21"); circle.setAttribute("r", "15.91549430918954"); circle.setAttribute("fill", "none");
-                circle.setAttribute("stroke", assetColors[item.s] || '#ffffff'); circle.setAttribute("stroke-width", "4");
-                let strokeLength = item.p; let strokeOffset = 100 - accumulatedPercentage;
-                circle.setAttribute("stroke-dasharray", `${strokeLength} ${100 - strokeLength}`); circle.setAttribute("stroke-dashoffset", strokeOffset);
-                svg.appendChild(circle); accumulatedPercentage += item.p;
-            });
-        }
-        function updateMatrixView() {
-            const key = currentVade + '_' + currentRisk; const container = document.getElementById('allocationList'); const title = document.getElementById('displayTitle');
-            let vLabel = currentVade === 'kisa' ? 'KISA VADE' : currentVade === 'orta' ? 'ORTA VADE' : 'UZUN VADE';
-            let rLabel = currentRisk === 'safe' ? '🛡️ GÜVENLİ LİMAN' : currentRisk === 'balanced' ? '⚖️ DENGELİ PORTFÖY' : '🔥 AGRESİF BÜYÜME';
-            
-            if(title) title.innerText = vLabel + " + " + rLabel + " REÇETESİ";
-            let centerText = document.getElementById('chartCenterText');
-            if(centerText) centerText.innerHTML = `<b>${vLabel}</b><br>${currentRisk === 'safe' ? 'GÜVENLİ' : currentRisk === 'balanced' ? 'DENGELİ' : 'AGRESİF'}`;
-            
-            if(container) {
-                container.innerHTML = '';
-                matrixAllocations[key].forEach(item => {
-                    const row = document.createElement('div'); row.className = 'allocation-item';
-                    row.innerHTML = `<span class="item-label" style="color:${assetColors[item.s]}">• ${item.n}</span><span class="item-val">%${item.p}</span>`; container.appendChild(row);
-                });
-            }
-            drawDonutChart(matrixAllocations[key]);
-
-            let perf = calculateCellPerformance(key); let initialCash = 100000; let currentCash = initialCash * (1 + (perf / 100));
-            let bPercent = document.getElementById('bannerPercent'); if(bPercent) bPercent.innerText = (perf >= 0 ? '%+' : '%') + perf.toFixed(2);
-            let bCash = document.getElementById('bannerCash'); if(bCash) bCash.innerText = Math.round(currentCash).toLocaleString('tr-TR') + ' ' + currentCurrency;
-            
-            Object.keys(matrixAllocations).forEach(k => {
-                let p = calculateCellPerformance(k); let el = document.getElementById(`perf_${k}`);
-                if(el) { el.innerText = (p >= 0 ? '%+' : '%') + p.toFixed(2); if(p < 0) el.classList.add('negative'); else el.classList.remove('negative'); }
-            });
-            const tbody = document.getElementById('trackerTableBody'); if(tbody) { tbody.innerHTML = ''; }
-            let totalMaliyet = 0; let totalGuncel = 0;
-            
-            userPortfolio.forEach(item => {
-                let costPrice = getDailyHistoricalPrice(item.asset, item.dateStr); let currentPrice = livePrices[item.asset];
-                let itemPerf = ((currentPrice - costPrice) / costPrice) * 100; let currentVal = item.amount * (1 + (itemPerf / 100));
-                totalMaliyet += item.amount; totalGuncel += currentVal;
-                
-                if(tbody) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td style="color:${assetColors[item.asset]}">${item.name}</td> <td>${item.displayDate}</td>
-                        <td style="text-align:right;">${item.amount.toLocaleString('tr-TR')} ${item.unit}</td>
-                        <td style="text-align:right; color:#85BB65;">${Math.round(currentVal).toLocaleString('tr-TR')} ${item.unit}</td>
-                        <td style="text-align:right; color:${itemPerf >= 0 ? '#85BB65':'#ef4444'};">${itemPerf >= 0 ? '+':''}${itemPerf.toFixed(2)}%</td>
-                        <td style="text-align:right;"><button class="remove-btn" onclick="removeAsset(${item.id})">✕ Sil</button></td>
-                    `;
-                    tbody.appendChild(tr);
-                }
-            });
-            const summaryBanner = document.getElementById('trackerSummaryBanner');
-            if(summaryBanner) {
-                if(userPortfolio.length > 0) {
-                    summaryBanner.style.display = 'block'; let totalDiffPerf = ((totalGuncel - totalMaliyet) / totalMaliyet) * 100;
-                    document.getElementById('trackTotalCash').innerText = Math.round(totalGuncel).toLocaleString('tr-TR') + ' ' + currentCurrency;
-                    document.getElementById('trackTotalPercent').innerText = (totalDiffPerf >= 0 ? '%+':'%') + totalDiffPerf.toFixed(2);
-                    if(totalDiffPerf < 0) summaryBanner.style.backgroundColor = 'rgba(239,68,68,0.1)'; else summaryBanner.style.backgroundColor = 'rgba(133,187,101,0.1)';
-                } else { summaryBanner.style.display = 'none'; }
-            }
-        }
         setInterval(() => {
-            livePrices.gold += (Math.random() * 2 - 1); livePrices.usd += (Math.random() * 0.01 - 0.005); livePrices.oil += (Math.random() * 0.1 - 0.05); livePrices.gas += (Math.random() * 0.02 - 0.01);
-            let lg = document.getElementById('liveGold'); if(lg) lg.innerText = livePrices.gold.toFixed(2) + " $";
-            let lo = document.getElementById('liveOil'); if(lo) lo.innerText = livePrices.oil.toFixed(2) + " $";
-            let lgas = document.getElementById('liveGas'); if(lgas) lgas.innerText = livePrices.gas.toFixed(2) + " $";
-            let lusd = document.getElementById('liveUSD');
-            if(lusd) { if(currentCurrency === 'TRY') { lusd.innerText = livePrices.usd.toFixed(2) + " TRY"; } else { lusd.innerText = "1.00 NAKİT"; } }
+            livePrices.gold += 2 * Math.random() - 1;
+            livePrices.usd += 0.01 * Math.random() - 0.005;
+            livePrices.oil += 0.1 * Math.random() - 0.05;
+            livePrices.gas += 0.02 * Math.random() - 0.01;
+            let e = document.getElementById("liveGold"); e && (e.innerText = livePrices.gold.toFixed(2) + " $");
+            let r = document.getElementById("liveOil"); r && (r.innerText = livePrices.oil.toFixed(2) + " $");
+            let t = document.getElementById("liveGas"); t && (t.innerText = livePrices.gas.toFixed(2) + " $");
+            let a = document.getElementById("liveUSD"); a && ("TRY" === currentCurrency ? a.innerText = livePrices.usd.toFixed(2) + " TRY" : a.innerText = "1.00 NAKİT");
             updateMatrixView();
         }, 1500);
+        setTimeout(() => {
+            document.getElementById("tvChartContainer").innerHTML = `<iframe src="https://tradingeconomics.com" width="100%" height="100%" frameborder="0" scrolling="no"></iframe>`;
+        }, 500);
         updateMatrixView();
     </script>
 </body>
 </html>
-<script>
-function selectCell(vade, risk) {
-    currentVade = vade; currentRisk = risk;
-    document.querySelectorAll(".matrix-box").forEach(e => e.classList.remove('active'));
-    document.getElementById(`cell_${vade}_${risk}`).classList.add("active");
-    updateMatrixView();
-    let symbol = "USDTL";
-    if(vade === "kisa" && risk === "aggressive") symbol = "BRENT";
-    if(vade === "orta" && risk === "safe") symbol = "GOLD";
-    if(vade === "orta" && risk === "aggressive") symbol = "SILVER";
-    if(vade === "uzun" && risk === "aggressive") symbol = "NATURALGAS";
-    let container = document.getElementById("tvChartContainer");
-    if(container) {
-        container.innerHTML = `<iframe src="https://tradingeconomics.com{symbol}?m=1&h=320&d1=1_year&p=0&islg=0&ohlc=0" width="100%" height="100%" frameborder="0" scrolling="no"></iframe>`;
-    }
-}
-setTimeout(() => { selectCell('kisa', 'balanced'); }, 1000);
-</script>
-
