@@ -370,4 +370,23 @@
         updateMatrixView();
     </script>
 </body>
-</html> 
+</html>
+<script>
+function selectCell(vade, risk) {
+    currentVade = vade; currentRisk = risk;
+    document.querySelectorAll(".matrix-box").forEach(e => e.classList.remove('active'));
+    document.getElementById(`cell_${vade}_${risk}`).classList.add("active");
+    updateMatrixView();
+    let symbol = "USDTL";
+    if(vade === "kisa" && risk === "aggressive") symbol = "BRENT";
+    if(vade === "orta" && risk === "safe") symbol = "GOLD";
+    if(vade === "orta" && risk === "aggressive") symbol = "SILVER";
+    if(vade === "uzun" && risk === "aggressive") symbol = "NATURALGAS";
+    let container = document.getElementById("tvChartContainer");
+    if(container) {
+        container.innerHTML = `<iframe src="https://tradingeconomics.com{symbol}?m=1&h=320&d1=1_year&p=0&islg=0&ohlc=0" width="100%" height="100%" frameborder="0" scrolling="no"></iframe>`;
+    }
+}
+setTimeout(() => { selectCell('kisa', 'balanced'); }, 1000);
+</script>
+
