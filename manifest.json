@@ -1,0 +1,22 @@
+{
+  "name": "MyUrgentBox - Dinamik Matris Terminali",
+  "short_name": "MyUrgentBox",
+  "description": "The Elite Nine - Kurumsal 3x3 Likidite Matrisi",
+  "start_url": "/myurgentbox/",
+  "display": "standalone",
+  "background_color": "#0D1B2A",
+  "theme_color": "#0D1B2A",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://icons8.com",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://icons8.com",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
